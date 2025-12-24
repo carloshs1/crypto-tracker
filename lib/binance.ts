@@ -1,6 +1,6 @@
-import type { ExchangeInfo, Kline, Ticker24hr } from './types';
+import type { ExchangeInfo, Kline, SymbolInfo, Ticker24hr } from "./types";
 
-const BINANCE_API_BASE = 'https://data-api.binance.vision/api/v3';
+const BINANCE_API_BASE = "https://data-api.binance.vision/api/v3";
 
 /**
  * Fetches 24hr ticker statistics for all symbols
@@ -18,11 +18,13 @@ export async function get24hrTicker(): Promise<Ticker24hr[]> {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch ticker data: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch ticker data: ${response.status} ${response.statusText}`
+      );
     }
 
     const data = await response.json();
-    
+
     if (!Array.isArray(data)) {
       throw new Error("Invalid response format from API");
     }
@@ -30,7 +32,9 @@ export async function get24hrTicker(): Promise<Ticker24hr[]> {
     return data;
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {
-      throw new Error("Request timeout. Please check your internet connection.");
+      throw new Error(
+        "Request timeout. Please check your internet connection."
+      );
     }
     if (error instanceof Error && error.name === "AbortError") {
       throw new Error("Request was aborted.");
@@ -44,7 +48,7 @@ export async function get24hrTicker(): Promise<Ticker24hr[]> {
  */
 export async function getKlines(
   symbol: string,
-  interval: string = '1h',
+  interval: string = "1h",
   limit: number = 24
 ): Promise<Kline[]> {
   try {
@@ -72,15 +76,17 @@ export async function getKlines(
       if (response.status === 400) {
         throw new Error(`Invalid symbol: ${symbol}`);
       }
-      throw new Error(`Failed to fetch klines: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch klines: ${response.status} ${response.statusText}`
+      );
     }
 
     const data = await response.json();
-    
+
     if (!Array.isArray(data)) {
       throw new Error("Invalid response format from API");
     }
-    
+
     // Transform the array response into Kline objects
     return data.map((kline: (string | number)[]) => {
       if (!Array.isArray(kline) || kline.length < 12) {
@@ -103,7 +109,9 @@ export async function getKlines(
     });
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {
-      throw new Error("Request timeout. Please check your internet connection.");
+      throw new Error(
+        "Request timeout. Please check your internet connection."
+      );
     }
     if (error instanceof Error && error.name === "AbortError") {
       throw new Error("Request was aborted.");
@@ -130,8 +138,9 @@ export async function getExchangeInfo(): Promise<ExchangeInfo> {
 /**
  * Gets symbol information for a specific symbol
  */
-export async function getSymbolInfo(symbol: string): Promise<SymbolInfo | undefined> {
+export async function getSymbolInfo(
+  symbol: string
+): Promise<SymbolInfo | undefined> {
   const exchangeInfo = await getExchangeInfo();
   return exchangeInfo.symbols.find((s) => s.symbol === symbol);
 }
-

@@ -11,7 +11,7 @@ import type { Kline, Ticker24hr } from "@/lib/types";
 import { useMemo, useState } from "react";
 
 export default function Home() {
-  const { tickers, isLoading, error, refetch } = useCryptoData();
+  const { tickers, isLoading, error } = useCryptoData();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTicker, setSelectedTicker] = useState<Ticker24hr | null>(null);
   const [klines, setKlines] = useState<Kline[]>([]);

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { CryptoCard } from "./CryptoCard"
-import { LoadingState } from "./LoadingState"
-import type { Ticker24hr } from "@/lib/types"
-import { AlertCircle } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card";
+import type { Ticker24hr } from "@/lib/types";
+import { AlertCircle } from "lucide-react";
+import { CryptoCard } from "./CryptoCard";
+import { LoadingState } from "./LoadingState";
 
 interface CryptoListProps {
-  tickers: Ticker24hr[]
-  isLoading: boolean
-  error: Error | null
-  onCryptoClick: (ticker: Ticker24hr) => void
+  tickers: Ticker24hr[];
+  isLoading: boolean;
+  error: Error | null;
+  onCryptoClick: (ticker: Ticker24hr) => void;
 }
 
 export function CryptoList({
@@ -20,7 +20,7 @@ export function CryptoList({
   onCryptoClick,
 }: CryptoListProps) {
   if (isLoading) {
-    return <LoadingState />
+    return <LoadingState />;
   }
 
   if (error) {
@@ -30,24 +30,27 @@ export function CryptoList({
           <AlertCircle className="h-12 w-12 text-destructive mb-4" />
           <h3 className="text-lg font-semibold mb-2">Failed to load data</h3>
           <p className="text-sm text-muted-foreground text-center max-w-md">
-            {error.message || "An error occurred while fetching cryptocurrency data. Please try again later."}
+            {error.message ||
+              "An error occurred while fetching cryptocurrency data. Please try again later."}
           </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (tickers.length === 0) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-lg text-muted-foreground">No cryptocurrencies found</p>
+          <p className="text-lg text-muted-foreground">
+            No cryptocurrencies found
+          </p>
           <p className="text-sm text-muted-foreground mt-2">
             Try adjusting your search criteria
           </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -61,6 +64,5 @@ export function CryptoList({
         />
       ))}
     </div>
-  )
+  );
 }
-

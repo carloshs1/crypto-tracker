@@ -1,22 +1,25 @@
-"use client"
+"use client";
 
-import { Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { useMemo, useState } from "react"
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { useState } from "react";
 
 interface SearchBarProps {
-  onSearchChange: (query: string) => void
-  placeholder?: string
+  onSearchChange: (query: string) => void;
+  placeholder?: string;
 }
 
-export function SearchBar({ onSearchChange, placeholder = "Search cryptocurrencies..." }: SearchBarProps) {
-  const [searchQuery, setSearchQuery] = useState("")
+export function SearchBar({
+  onSearchChange,
+  placeholder = "Search cryptocurrencies...",
+}: SearchBarProps) {
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchQuery(value)
-    onSearchChange(value)
-  }
+    const value = e.target.value;
+    setSearchQuery(value);
+    onSearchChange(value);
+  };
 
   return (
     <div className="relative">
@@ -29,6 +32,5 @@ export function SearchBar({ onSearchChange, placeholder = "Search cryptocurrenci
         className="pl-10"
       />
     </div>
-  )
+  );
 }
-

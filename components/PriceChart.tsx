@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Kline } from "@/lib/types";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts"
-import type { Kline } from "@/lib/types"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "recharts";
 
 interface PriceChartProps {
-  klines: Kline[]
-  isLoading: boolean
+  klines: Kline[];
+  isLoading: boolean;
 }
 
 export function PriceChart({ klines, isLoading }: PriceChartProps) {
   if (isLoading) {
-    return <Skeleton className="h-64 w-full" />
+    return <Skeleton className="h-64 w-full" />;
   }
 
   if (klines.length === 0) {
@@ -27,7 +27,7 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
       <div className="flex h-64 items-center justify-center text-muted-foreground">
         No chart data available
       </div>
-    )
+    );
   }
 
   // Transform klines data for the chart
@@ -39,7 +39,7 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
     price: parseFloat(kline.close),
     high: parseFloat(kline.high),
     low: parseFloat(kline.low),
-  }))
+  }));
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -72,6 +72,5 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
         />
       </LineChart>
     </ResponsiveContainer>
-  )
+  );
 }
-

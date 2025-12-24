@@ -1,26 +1,25 @@
-"use client"
+"use client";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { PriceChart } from "./PriceChart"
-import { Skeleton } from "@/components/ui/skeleton"
-import type { Ticker24hr, Kline } from "@/lib/types"
-import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import type { Kline, Ticker24hr } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { BarChart3, TrendingDown, TrendingUp } from "lucide-react";
+import { PriceChart } from "./PriceChart";
 
 interface CryptoDetailsProps {
-  ticker: Ticker24hr | null
-  klines: Kline[]
-  isLoadingKlines: boolean
-  isOpen: boolean
-  onClose: () => void
+  ticker: Ticker24hr | null;
+  klines: Kline[];
+  isLoadingKlines: boolean;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function CryptoDetails({
@@ -30,17 +29,17 @@ export function CryptoDetails({
   isOpen,
   onClose,
 }: CryptoDetailsProps) {
-  if (!ticker) return null
+  if (!ticker) return null;
 
-  const priceChangePercent = parseFloat(ticker.priceChangePercent)
-  const isPositive = priceChangePercent >= 0
+  const priceChangePercent = parseFloat(ticker.priceChangePercent);
+  const isPositive = priceChangePercent >= 0;
 
   const formatNumber = (value: string, decimals: number = 2) => {
     return parseFloat(value).toLocaleString(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    })
-  }
+    });
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -77,11 +76,15 @@ export function CryptoDetails({
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Last Price</p>
-              <p className="text-xl font-bold">${formatNumber(ticker.lastPrice)}</p>
+              <p className="text-xl font-bold">
+                ${formatNumber(ticker.lastPrice)}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Open Price</p>
-              <p className="text-xl font-semibold">${formatNumber(ticker.openPrice)}</p>
+              <p className="text-xl font-semibold">
+                ${formatNumber(ticker.openPrice)}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">High Price</p>
@@ -111,19 +114,33 @@ export function CryptoDetails({
                 <p className="font-medium">{formatNumber(ticker.volume)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Quote Volume</p>
-                <p className="font-medium">${formatNumber(ticker.quoteVolume)}</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Quote Volume
+                </p>
+                <p className="font-medium">
+                  ${formatNumber(ticker.quoteVolume)}
+                </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Weighted Avg Price</p>
-                <p className="font-medium">${formatNumber(ticker.weightedAvgPrice)}</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Weighted Avg Price
+                </p>
+                <p className="font-medium">
+                  ${formatNumber(ticker.weightedAvgPrice)}
+                </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Price Change</p>
-                <p className={cn(
-                  "font-medium",
-                  isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                )}>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Price Change
+                </p>
+                <p
+                  className={cn(
+                    "font-medium",
+                    isPositive
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  )}
+                >
                   {isPositive ? "+" : ""}${formatNumber(ticker.priceChange)}
                 </p>
               </div>
@@ -148,6 +165,5 @@ export function CryptoDetails({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-
