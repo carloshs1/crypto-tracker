@@ -6,9 +6,13 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useCryptoData } from "@/hooks/useCryptoData";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getKlines } from "@/lib/binance";
 import type { Kline, Ticker24hr } from "@/lib/types";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+const INITIAL_VISIBLE_COUNT = 30;
+const LOAD_MORE_COUNT = 20;
 
 export default function Home() {
   const { tickers, isLoading, error } = useCryptoData();
@@ -17,6 +21,7 @@ export default function Home() {
   const [klines, setKlines] = useState<Kline[]>([]);
   const [isLoadingKlines, setIsLoadingKlines] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
 
   // Filter tickers based on search query
   const filteredTickers = useMemo(() => {
@@ -31,6 +36,22 @@ export default function Home() {
         ticker.symbol.toLowerCase().startsWith(query)
     );
   }, [tickers, searchQuery]);
+
+  // Reset visible count when search query changes
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  }, [searchQuery]);
+
+  // Handle loading more items
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount((prev) => prev + LOAD_MORE_COUNT);
+  }, []);
+
+  // Use infinite scroll hook
+  const sentinelRef = useInfiniteScroll({
+    onIntersect: handleLoadMore,
+    enabled: !isLoading && filteredTickers.length > visibleCount,
+  });
 
   const handleCryptoClick = async (ticker: Ticker24hr) => {
     setSelectedTicker(ticker);
@@ -94,7 +115,7 @@ export default function Home() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Showing</span>
                         <span className="font-medium">
-                          {filteredTickers.length}
+                          {Math.min(visibleCount, filteredTickers.length)}
                         </span>
                       </div>
                     </div>
@@ -138,8 +159,8 @@ export default function Home() {
               <SearchBar onSearchChange={setSearchQuery} />
               {!isLoading && !error && (
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Showing {filteredTickers.length} of {tickers.length}{" "}
-                  cryptocurrencies
+                  Showing {Math.min(visibleCount, filteredTickers.length)} of{" "}
+                  {filteredTickers.length} cryptocurrencies
                 </p>
               )}
             </div>
@@ -148,8 +169,8 @@ export default function Home() {
             {!isLoading && !error && (
               <div className="hidden lg:block mb-6">
                 <p className="text-sm text-muted-foreground">
-                  Showing {filteredTickers.length} of {tickers.length}{" "}
-                  cryptocurrencies
+                  Showing {Math.min(visibleCount, filteredTickers.length)} of{" "}
+                  {filteredTickers.length} cryptocurrencies
                 </p>
               </div>
             )}
@@ -159,6 +180,9 @@ export default function Home() {
               isLoading={isLoading}
               error={error}
               onCryptoClick={handleCryptoClick}
+              visibleCount={visibleCount}
+              hasMore={filteredTickers.length > visibleCount}
+              sentinelRef={sentinelRef}
             />
 
             {/* Details Modal */}

@@ -2,7 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import type { Ticker24hr } from "@/lib/types";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useMemo } from "react";
 import { CryptoCard } from "./CryptoCard";
 import { LoadingState } from "./LoadingState";
 
@@ -11,6 +12,9 @@ interface CryptoListProps {
   isLoading: boolean;
   error: Error | null;
   onCryptoClick: (ticker: Ticker24hr) => void;
+  visibleCount: number;
+  hasMore: boolean;
+  sentinelRef: (node: HTMLDivElement | null) => void;
 }
 
 export function CryptoList({
@@ -18,7 +22,16 @@ export function CryptoList({
   isLoading,
   error,
   onCryptoClick,
+  visibleCount,
+  hasMore,
+  sentinelRef,
 }: CryptoListProps) {
+  // Slice tickers to only show visible count (must be before early returns)
+  const visibleTickers = useMemo(
+    () => tickers.slice(0, visibleCount),
+    [tickers, visibleCount]
+  );
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -54,15 +67,26 @@ export function CryptoList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {tickers.map((ticker, index) => (
-        <CryptoCard
-          key={ticker.symbol}
-          ticker={ticker}
-          onClick={() => onCryptoClick(ticker)}
-          index={index}
-        />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {visibleTickers.map((ticker, index) => (
+          <CryptoCard
+            key={ticker.symbol}
+            ticker={ticker}
+            onClick={() => onCryptoClick(ticker)}
+            index={index}
+          />
+        ))}
+      </div>
+      {/* Sentinel element for infinite scroll */}
+      {hasMore && (
+        <div
+          ref={sentinelRef}
+          className="flex justify-center items-center py-8"
+        >
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      )}
+    </>
   );
 }

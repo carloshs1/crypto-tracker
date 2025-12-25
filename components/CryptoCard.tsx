@@ -6,6 +6,7 @@ import type { Ticker24hr } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { memo } from "react";
 
 interface CryptoCardProps {
   ticker: Ticker24hr;
@@ -13,7 +14,11 @@ interface CryptoCardProps {
   index?: number;
 }
 
-export function CryptoCard({ ticker, onClick, index = 0 }: CryptoCardProps) {
+export const CryptoCard = memo(function CryptoCard({
+  ticker,
+  onClick,
+  index = 0,
+}: CryptoCardProps) {
   const priceChangePercent = parseFloat(ticker.priceChangePercent);
   const isPositive = priceChangePercent >= 0;
   const formattedPrice = parseFloat(ticker.lastPrice).toLocaleString(
@@ -29,9 +34,10 @@ export function CryptoCard({ ticker, onClick, index = 0 }: CryptoCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      transition={{ duration: 0.15, delay: Math.min(index * 0.01, 0.3) }}
+      layout
     >
       <Card
         className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
@@ -88,4 +94,4 @@ export function CryptoCard({ ticker, onClick, index = 0 }: CryptoCardProps) {
       </Card>
     </motion.div>
   );
-}
+});
