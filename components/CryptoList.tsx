@@ -41,7 +41,7 @@ export function CryptoList({
             className="h-12 w-12 text-destructive mb-4"
             aria-hidden="true"
           />
-          <h3 className="text-lg font-semibold mb-2">Failed to load data</h3>
+          <h2 className="text-lg font-semibold mb-2">Failed to load data</h2>
           <p className="text-sm text-muted-foreground text-center max-w-md">
             {error.message ||
               "An error occurred while fetching cryptocurrency data. Please try again later."}
@@ -68,6 +68,7 @@ export function CryptoList({
 
   return (
     <>
+      <h2 className="sr-only">Cryptocurrency List</h2>
       <div
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         role="list"
