@@ -30,6 +30,8 @@ crypto-tracker/
 ├── app/
 │   ├── layout.tsx          # Root layout with metadata
 │   ├── page.tsx            # Main dashboard page
+│   ├── error.tsx           # Route-level error boundary
+│   ├── global-error.tsx    # Global error boundary
 │   └── globals.css         # Global styles and theme variables
 ├── components/
 │   ├── ui/                 # shadcn/ui components
@@ -46,7 +48,8 @@ crypto-tracker/
 │   ├── CryptoDetails.tsx   # Details modal
 │   ├── PriceChart.tsx      # Price history chart
 │   ├── LoadingState.tsx    # Loading skeleton
-│   ├── ErrorBoundary.tsx   # Error boundary component
+│   ├── error.tsx           # Next.js error boundary (route-level)
+│   ├── global-error.tsx    # Next.js global error boundary
 │   └── ThemeToggle.tsx     # Dark mode toggle
 ├── lib/
 │   ├── utils.ts           # Utility functions (cn helper)
@@ -225,7 +228,7 @@ The details modal design focuses on:
 
 **Solution**:
 
-- Implemented ErrorBoundary component for React errors
+- Implemented Next.js error boundaries (error.tsx and global-error.tsx) following Next.js best practices
 - API errors show user-friendly messages with retry options
 - Maintains existing data on refresh failures
 - Loading states prevent flash of empty content
