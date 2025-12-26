@@ -51,12 +51,13 @@ crypto-tracker/
 │   ├── CryptoCard.tsx      # Individual crypto card with animations
 │   ├── CryptoPageWrapper.tsx # Page wrapper with SearchProvider
 │   ├── CryptoLayout.tsx    # Layout component (sidebar + main panel)
-│   ├── SearchBar.tsx       # Search/filter component with keyboard shortcuts
-│   ├── SearchContext.tsx   # Context provider for search state
 │   ├── CryptoDetails.tsx   # Details modal with price chart
 │   ├── PriceChart.tsx      # Price history chart (Recharts)
+│   ├── SearchBar.tsx       # Search/filter component with keyboard shortcuts
 │   ├── LoadingState.tsx    # Loading skeleton component
-│   ├── ThemeToggle.tsx     # Dark mode toggle dropdown
+│   └── ThemeToggle.tsx     # Dark mode toggle dropdown
+├── providers/              # React Context providers and hooks
+│   ├── SearchContext.tsx   # Search state context provider and useSearch hook
 │   └── theme-provider.tsx  # Theme provider wrapper (next-themes)
 ├── lib/
 │   ├── utils.ts           # Utility functions (cn helper, OS detection)
@@ -99,6 +100,27 @@ I used React Context API (`SearchContext`) combined with React hooks (`useState`
 - **Next.js Integration**: Works seamlessly with Next.js App Router patterns
 - **Future Scalability**: Easy to migrate to React Query or Zustand if needed
 
+### Providers Architecture
+
+The application uses a dedicated `providers/` folder to organize all React Context providers and their associated hooks. This separation provides several benefits:
+
+- **Clear Separation of Concerns**: Providers are separated from UI components, making the codebase more maintainable
+- **Scalability**: This structure makes it easy to add new providers as the application grows (e.g., `UserContext`, `SubscriptionContext`, `NotificationContext`, etc.)
+- **Consistent Pattern**: All providers follow the same organizational pattern, making it easier for developers to find and understand context-related code
+- **Reusability**: Providers can be easily imported and composed at different levels of the component tree
+
+Current providers:
+
+- **SearchContext**: Manages global search state and provides `useSearch()` hook for components that need access to search functionality
+- **ThemeProvider**: Wraps `next-themes` to provide theme management (light/dark/system) across the application
+
+Future providers can be added following the same pattern:
+
+- `UserContext.tsx` - User authentication and profile state
+- `SubscriptionContext.tsx` - Subscription and premium features state
+- `NotificationContext.tsx` - Global notification system
+- `PreferencesContext.tsx` - User preferences and settings
+
 ### Data Fetching Strategy
 
 - **Initial Load**: Server Component (`page.tsx`) fetches ticker data using `getProcessedTickers()` with Next.js Data Cache
@@ -120,8 +142,9 @@ I used React Context API (`SearchContext`) combined with React hooks (`useState`
   - `CryptoList` → Renders the grid of crypto cards
 - **Custom Hooks**:
   - `useInfiniteScroll` → Intersection Observer-based infinite scroll (starts with 30 items, loads 20 more on scroll)
-  - `useSearch` → Context hook for accessing search state
+  - `useSearch` → Context hook for accessing search state (from `providers/SearchContext`)
 - **Composition**: Small, focused components that compose together (Card, List, Details, Layout)
+- **Providers**: All React Context providers are organized in the `providers/` folder for better maintainability and scalability
 
 ### Infinite Scroll Implementation
 
