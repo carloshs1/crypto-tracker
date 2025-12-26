@@ -2,9 +2,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { Kline } from "@/lib/types";
 import { useTheme } from "next-themes";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
-  Line,
-  LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,9 +15,16 @@ import {
 interface PriceChartProps {
   klines: Kline[];
   isLoading: boolean;
+  isPositive?: boolean;
+  openPrice?: number;
 }
 
-export function PriceChart({ klines, isLoading }: PriceChartProps) {
+export function PriceChart({
+  klines,
+  isLoading,
+  isPositive = true,
+  openPrice,
+}: PriceChartProps) {
   const { resolvedTheme } = useTheme();
   const colors = {
     foreground: resolvedTheme === "dark" ? "#ffffff" : "#000000",
@@ -24,6 +32,13 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
     card: resolvedTheme === "dark" ? "#1a1a1a" : "#ffffff",
     cardForeground: resolvedTheme === "dark" ? "#ffffff" : "#000000",
     primary: resolvedTheme === "dark" ? "#ffffff" : "#000000",
+    areaFill: isPositive
+      ? resolvedTheme === "dark"
+        ? "#22c55e"
+        : "#22c55e"
+      : resolvedTheme === "dark"
+      ? "#ef4444"
+      : "#ef4444",
   };
 
   if (isLoading) {
@@ -51,7 +66,23 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={chartData}>
+      <AreaChart data={chartData}>
+        <defs>
+          <linearGradient
+            id={`colorArea-${isPositive ? "green" : "red"}`}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
+            <stop offset="0%" stopColor={colors.areaFill} stopOpacity={0.3} />
+            <stop
+              offset="100%"
+              stopColor={colors.areaFill}
+              stopOpacity={0.05}
+            />
+          </linearGradient>
+        </defs>
         <CartesianGrid
           strokeDasharray="3 3"
           stroke={colors.border}
@@ -86,15 +117,30 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
           }}
           formatter={(value: number) => `$${value.toFixed(2)}`}
         />
-        <Line
+        {openPrice && (
+          <ReferenceLine
+            y={openPrice}
+            stroke={colors.foreground}
+            strokeDasharray="5 5"
+            strokeOpacity={0.5}
+            label={{
+              value: "Open",
+              position: "right",
+              fill: colors.foreground,
+              fontSize: 11,
+              opacity: 0.7,
+            }}
+          />
+        )}
+        <Area
           type="monotone"
           dataKey="price"
-          stroke={colors.primary}
+          stroke={colors.areaFill}
           strokeWidth={2.5}
-          dot={false}
-          activeDot={{ r: 4, fill: colors.primary }}
+          fill={`url(#colorArea-${isPositive ? "green" : "red"})`}
+          fillOpacity={1}
         />
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 }

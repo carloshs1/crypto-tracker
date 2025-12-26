@@ -166,7 +166,12 @@ export function CryptoDetails({
           {/* Price Chart */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Price History (24h)</h3>
-            <PriceChart klines={klines} isLoading={isLoadingKlines} />
+            <PriceChart
+              klines={klines}
+              isLoading={isLoadingKlines}
+              isPositive={isPositive}
+              openPrice={parseFloat(ticker.openPrice)}
+            />
           </div>
         </div>
       </DialogContent>
