@@ -44,19 +44,10 @@ export function SearchBar({
     }
   };
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, []);
-
+  // Combined initialization effect: OS detection, keyboard shortcut, and cleanup
   useEffect(() => {
     // Detect OS and mark as mounted after hydration
     // This is necessary to avoid hydration mismatches between server and client
-    // The state update happens after mount, synchronizing with the browser's navigator API
     const updateClientState = () => {
       setClientState({
         mounted: true,
@@ -64,9 +55,8 @@ export function SearchBar({
       });
     };
     updateClientState();
-  }, []);
 
-  useEffect(() => {
+    // Set up keyboard shortcut listener (Cmd+K / Ctrl+K)
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -76,7 +66,14 @@ export function SearchBar({
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup function
     return () => {
+      // Cleanup debounce timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      // Remove keyboard shortcut listener
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
