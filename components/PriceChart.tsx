@@ -42,12 +42,12 @@ export function PriceChart({
   };
 
   if (isLoading) {
-    return <Skeleton className="h-64 w-full" />;
+    return <Skeleton className="h-[300px] w-full" />;
   }
 
   if (klines.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-muted-foreground">
+      <div className="flex h-[300px] items-center justify-center text-muted-foreground">
         No chart data available
       </div>
     );
