@@ -17,13 +17,13 @@ interface PriceChartProps {
 }
 
 export function PriceChart({ klines, isLoading }: PriceChartProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const colors = {
-    foreground: theme === "dark" ? "#ffffff" : "#000000",
-    border: theme === "dark" ? "#1a1a1a" : "#e5e5e5",
-    card: theme === "dark" ? "#1a1a1a" : "#ffffff",
-    cardForeground: theme === "dark" ? "#ffffff" : "#000000",
-    primary: theme === "dark" ? "#ffffff" : "#000000",
+    foreground: resolvedTheme === "dark" ? "#ffffff" : "#000000",
+    border: resolvedTheme === "dark" ? "#1a1a1a" : "#e5e5e5",
+    card: resolvedTheme === "dark" ? "#1a1a1a" : "#ffffff",
+    cardForeground: resolvedTheme === "dark" ? "#ffffff" : "#000000",
+    primary: resolvedTheme === "dark" ? "#ffffff" : "#000000",
   };
 
   if (isLoading) {
