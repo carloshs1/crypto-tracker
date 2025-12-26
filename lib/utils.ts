@@ -35,3 +35,26 @@ export function formatCompactNumber(
     maximumFractionDigits,
   });
 }
+
+/**
+ * Detects the user's operating system
+ * Returns 'mac' for macOS, 'windows' for Windows, or 'linux' for Linux/other
+ */
+export function detectOS(): 'mac' | 'windows' | 'linux' {
+  if (typeof window === 'undefined') {
+    return 'linux'; // Default for SSR
+  }
+  
+  const platform = window.navigator.platform.toLowerCase();
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  
+  if (platform.includes('mac') || userAgent.includes('mac')) {
+    return 'mac';
+  }
+  
+  if (platform.includes('win') || userAgent.includes('windows')) {
+    return 'windows';
+  }
+  
+  return 'linux';
+}
