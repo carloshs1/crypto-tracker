@@ -21,12 +21,37 @@ export function SearchBar({
     os: "linux",
   });
   const inputRef = useRef<HTMLInputElement>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    onSearchChange(value);
+
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Only trigger search if query has at least 2 characters
+    if (value.length >= 2) {
+      // Set new timeout to debounce the search
+      debounceTimeoutRef.current = setTimeout(() => {
+        onSearchChange(value);
+      }, 200);
+    } else {
+      // If less than 2 characters, clear the search immediately
+      onSearchChange("");
+    }
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Detect OS and mark as mounted after hydration
