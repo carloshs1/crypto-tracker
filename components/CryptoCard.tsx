@@ -40,6 +40,15 @@ export const CryptoCard = memo(function CryptoCard({
       <Card
         className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
         onClick={onClick}
+        role="button"
+        tabIndex={0}
+        aria-label={`View details for ${ticker.symbol}, price $${formattedPrice}, ${priceChangePercent >= 0 ? 'up' : 'down'} ${Math.abs(priceChangePercent).toFixed(2)}%`}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick();
+          }
+        }}
       >
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">

@@ -35,9 +35,9 @@ export function CryptoList({
 
   if (error) {
     return (
-      <Card className="border-destructive">
+      <Card className="border-destructive" role="alert" aria-live="assertive">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+          <AlertCircle className="h-12 w-12 text-destructive mb-4" aria-hidden="true" />
           <h3 className="text-lg font-semibold mb-2">Failed to load data</h3>
           <p className="text-sm text-muted-foreground text-center max-w-md">
             {error.message ||
@@ -50,7 +50,7 @@ export function CryptoList({
 
   if (tickers.length === 0) {
     return (
-      <Card>
+      <Card role="status" aria-live="polite">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <p className="text-lg text-muted-foreground">
             No cryptocurrencies found
@@ -65,14 +65,19 @@ export function CryptoList({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div 
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        role="list"
+        aria-label="Cryptocurrency list"
+      >
         {visibleTickers.map((ticker, index) => (
-          <CryptoCard
-            key={ticker.symbol}
-            ticker={ticker}
-            onClick={() => onCryptoClick(ticker)}
-            index={index}
-          />
+          <div key={ticker.symbol} role="listitem">
+            <CryptoCard
+              ticker={ticker}
+              onClick={() => onCryptoClick(ticker)}
+              index={index}
+            />
+          </div>
         ))}
       </div>
       {/* Sentinel element for infinite scroll */}
@@ -80,8 +85,12 @@ export function CryptoList({
         <div
           ref={sentinelRef}
           className="flex justify-center items-center py-8"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading more cryptocurrencies"
         >
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+          <span className="sr-only">Loading more cryptocurrencies...</span>
         </div>
       )}
     </>

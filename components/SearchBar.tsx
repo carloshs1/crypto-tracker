@@ -21,13 +21,18 @@ export function SearchBar({
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Search 
+        className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" 
+        aria-hidden="true"
+      />
       <Input
-        type="text"
+        type="search"
         placeholder={placeholder}
         value={searchQuery}
         onChange={handleChange}
         className="pl-10"
+        aria-label="Search cryptocurrencies"
+        autoComplete="off"
       />
     </div>
   );
