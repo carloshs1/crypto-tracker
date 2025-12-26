@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
 import type { Ticker24hr } from "@/lib/types";
 import { AlertCircle, Loader2 } from "lucide-react";
@@ -26,7 +24,6 @@ export function CryptoList({
   hasMore,
   sentinelRef,
 }: CryptoListProps) {
-  // Slice tickers to only show visible count (must be before early returns)
   const visibleTickers = useMemo(
     () => tickers.slice(0, visibleCount),
     [tickers, visibleCount]

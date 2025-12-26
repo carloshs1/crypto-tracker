@@ -1,9 +1,6 @@
-"use client";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Kline } from "@/lib/types";
 import { useTheme } from "next-themes";
-import { useMemo } from "react";
 import {
   CartesianGrid,
   Line,
@@ -21,16 +18,13 @@ interface PriceChartProps {
 
 export function PriceChart({ klines, isLoading }: PriceChartProps) {
   const { theme } = useTheme();
-  const colors = useMemo(
-    () => ({
-      foreground: theme === "dark" ? "#ffffff" : "#000000",
-      border: theme === "dark" ? "#1a1a1a" : "#e5e5e5",
-      card: theme === "dark" ? "#1a1a1a" : "#ffffff",
-      cardForeground: theme === "dark" ? "#ffffff" : "#000000",
-      primary: theme === "dark" ? "#ffffff" : "#000000",
-    }),
-    [theme]
-  );
+  const colors = {
+    foreground: theme === "dark" ? "#ffffff" : "#000000",
+    border: theme === "dark" ? "#1a1a1a" : "#e5e5e5",
+    card: theme === "dark" ? "#1a1a1a" : "#ffffff",
+    cardForeground: theme === "dark" ? "#ffffff" : "#000000",
+    primary: theme === "dark" ? "#ffffff" : "#000000",
+  };
 
   if (isLoading) {
     return <Skeleton className="h-64 w-full" />;

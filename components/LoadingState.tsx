@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function LoadingState() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: 12 }).map((_, i) => (
+      {Array.from({ length: 20 }).map((_, i) => (
         <Card key={i}>
           <CardHeader className="space-y-2">
             <Skeleton className="h-6 w-24" />
