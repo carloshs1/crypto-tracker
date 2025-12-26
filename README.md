@@ -4,14 +4,16 @@ A modern, responsive web application for tracking and analyzing cryptocurrency m
 
 ## 🚀 Features
 
-- **Real-time Market Data**: Fetches live cryptocurrency prices and 24-hour statistics from Binance API
-- **Search & Filter**: Search cryptocurrencies by symbol with instant filtering
-- **Detailed Views**: Click any cryptocurrency to view detailed statistics and price history charts
+- **Real-time Market Data**: Fetches live cryptocurrency prices and 24-hour statistics from Binance API with automatic 30-second refresh
+- **Search & Filter**: Search cryptocurrencies by symbol with instant filtering and keyboard shortcuts (Cmd+K / Ctrl+K)
+- **Infinite Scroll**: Progressive loading of cryptocurrency cards as you scroll for better performance
+- **Detailed Views**: Click any cryptocurrency to view detailed statistics and 24-hour price history charts
 - **Responsive Design**: Sidebar + main panel layout that adapts beautifully to all screen sizes
-- **Dark Mode**: Toggle between light and dark themes
+- **Dark Mode**: Toggle between light, dark, and system themes with persistent preference
 - **Smooth Animations**: Framer Motion animations for polished interactions
 - **Error Handling**: Comprehensive error boundaries and graceful error states
 - **Loading States**: Skeleton loaders for better UX during data fetching
+- **Market Statistics**: Real-time display of total markets and currently visible count
 
 ## 🛠️ Tech Stack
 
@@ -28,10 +30,11 @@ A modern, responsive web application for tracking and analyzing cryptocurrency m
 ```
 crypto-tracker/
 ├── app/
-│   ├── layout.tsx          # Root layout with metadata
-│   ├── page.tsx            # Main dashboard page
+│   ├── layout.tsx          # Root layout with metadata and theme provider
+│   ├── page.tsx            # Main dashboard page (Server Component)
 │   ├── error.tsx           # Route-level error boundary
 │   ├── global-error.tsx    # Global error boundary
+│   ├── loading.tsx         # Loading UI for Suspense boundaries
 │   └── globals.css         # Global styles and theme variables
 ├── components/
 │   ├── ui/                 # shadcn/ui components
@@ -41,22 +44,28 @@ crypto-tracker/
 │   │   ├── skeleton.tsx
 │   │   ├── badge.tsx
 │   │   ├── button.tsx
-│   │   └── separator.tsx
-│   ├── CryptoList.tsx      # Main crypto list component
-│   ├── CryptoCard.tsx      # Individual crypto card
-│   ├── SearchBar.tsx       # Search/filter component
-│   ├── CryptoDetails.tsx   # Details modal
-│   ├── PriceChart.tsx      # Price history chart
-│   ├── LoadingState.tsx    # Loading skeleton
-│   ├── error.tsx           # Next.js error boundary (route-level)
-│   ├── global-error.tsx    # Next.js global error boundary
-│   └── ThemeToggle.tsx     # Dark mode toggle
+│   │   ├── separator.tsx
+│   │   └── dropdown-menu.tsx
+│   ├── CryptoList.tsx      # Main crypto list component with infinite scroll
+│   ├── CryptoListData.tsx  # Client component managing crypto data and state
+│   ├── CryptoCard.tsx      # Individual crypto card with animations
+│   ├── CryptoPageWrapper.tsx # Page wrapper with SearchProvider
+│   ├── CryptoLayout.tsx    # Layout component (sidebar + main panel)
+│   ├── SearchBar.tsx       # Search/filter component with keyboard shortcuts
+│   ├── SearchContext.tsx   # Context provider for search state
+│   ├── CryptoDetails.tsx   # Details modal with price chart
+│   ├── PriceChart.tsx      # Price history chart (Recharts)
+│   ├── LoadingState.tsx    # Loading skeleton component
+│   ├── ThemeToggle.tsx     # Dark mode toggle dropdown
+│   └── theme-provider.tsx  # Theme provider wrapper (next-themes)
 ├── lib/
-│   ├── utils.ts           # Utility functions (cn helper)
-│   ├── binance.ts         # Binance API client
+│   ├── utils.ts           # Utility functions (cn helper, OS detection)
+│   ├── binance.ts         # Binance API client (server & client functions)
+│   ├── data.ts            # Data processing utilities
 │   └── types.ts           # TypeScript interfaces
 └── hooks/
-    └── useCryptoData.ts   # Custom hook for data fetching
+    ├── useCryptoData.ts   # Custom hook for data fetching (legacy)
+    └── useInfiniteScroll.ts # Infinite scroll hook using Intersection Observer
 ```
 
 ## 🏗️ Architecture & Tech Stack Decisions
@@ -82,27 +91,47 @@ shadcn/ui was selected because:
 
 ### State Management Approach
 
-I used React hooks (`useState`, `useEffect`, `useMemo`) instead of external state management libraries because:
+I used React Context API (`SearchContext`) combined with React hooks (`useState`, `useEffect`, `useMemo`) instead of external state management libraries because:
 
-- **Simplicity**: The app's state needs are straightforward - no complex global state
+- **Simplicity**: The app's state needs are straightforward - search query and stats updates
+- **Context for Shared State**: `SearchContext` provides search state across components without prop drilling
 - **Performance**: `useMemo` handles expensive filtering operations efficiently
 - **Next.js Integration**: Works seamlessly with Next.js App Router patterns
 - **Future Scalability**: Easy to migrate to React Query or Zustand if needed
 
 ### Data Fetching Strategy
 
-- **Initial Load**: Fetches all ticker data on page load using a custom hook
-- **Auto-refresh**: Polls API every 30 seconds to keep data current
-- **On-demand**: Fetches price history (klines) only when a crypto card is clicked
-- **Caching**: Uses Next.js `revalidate` for intelligent caching (30s for tickers, 60s for klines)
+- **Initial Load**: Server Component (`page.tsx`) fetches ticker data using `getProcessedTickers()` with Next.js Data Cache
+- **Suspense Boundaries**: Uses React Suspense for progressive loading - layout renders immediately, list loads asynchronously
+- **Auto-refresh**: Client-side polling every 30 seconds to keep data current (in `CryptoListData`)
+- **On-demand**: Fetches price history (klines) only when a crypto card is clicked using `getKlinesClient()`
+- **Caching**: Uses Next.js `revalidate` for intelligent caching (30s for tickers, 60s for klines, 1h for exchange info)
 - **Error Resilience**: Maintains existing data on refresh failures to avoid clearing the UI
+- **React Cache**: Uses React `cache()` for request deduplication within a single render pass
 
 ### Component Architecture
 
-- **Server Components**: Used where possible for initial data fetching (though this app is primarily client-side for real-time updates)
+- **Server Components**: `page.tsx` is a Server Component that fetches initial data and uses Suspense boundaries
 - **Client Components**: All interactive components marked with `"use client"` directive
-- **Custom Hooks**: Encapsulated data fetching logic in `useCryptoData` hook for reusability
-- **Composition**: Small, focused components that compose together (Card, List, Details)
+- **Component Hierarchy**:
+  - `CryptoPageWrapper` → Provides `SearchContext` and manages stats
+  - `CryptoLayout` → Handles responsive layout (sidebar + main panel)
+  - `CryptoListData` → Manages crypto data, filtering, infinite scroll, and details modal
+  - `CryptoList` → Renders the grid of crypto cards
+- **Custom Hooks**:
+  - `useInfiniteScroll` → Intersection Observer-based infinite scroll (starts with 30 items, loads 20 more on scroll)
+  - `useSearch` → Context hook for accessing search state
+- **Composition**: Small, focused components that compose together (Card, List, Details, Layout)
+
+### Infinite Scroll Implementation
+
+The app uses a progressive loading strategy:
+
+- **Initial Load**: Shows first 30 cryptocurrency cards
+- **Scroll Detection**: Uses Intersection Observer API to detect when user approaches bottom
+- **Progressive Loading**: Loads 20 more items each time user scrolls near the bottom
+- **Reset on Search**: Resets visible count when search query changes
+- **Performance**: Only renders visible items, but all filtered data is kept in memory for instant search
 
 ## 🤖 AI Usage (Transparency)
 
@@ -176,6 +205,14 @@ The details modal design focuses on:
 - **Scannable Layout**: Grid layout for statistics makes comparison easy
 - **Non-blocking**: Modal doesn't prevent viewing other cryptos (can close and open another)
 
+### Keyboard Shortcuts
+
+The app includes keyboard shortcuts for improved productivity:
+
+- **Cmd+K / Ctrl+K**: Focus the search input (Mac uses Cmd, Windows/Linux use Ctrl)
+- **OS Detection**: Automatically detects the operating system to show the correct shortcut hint
+- **Accessibility**: Keyboard shortcuts are displayed in the search bar for discoverability
+
 ### Responsive Breakpoints
 
 - **Mobile (< 640px)**: Single column, sidebar hidden, search in header
@@ -202,12 +239,14 @@ The details modal design focuses on:
 
 **Solution**:
 
+- **Infinite Scroll**: Progressive loading starting with 30 items, loading 20 more as user scrolls
 - Client-side filtering with `useMemo` for efficient re-renders
 - Sorted by volume (most traded first) so users see important cryptos first
 - Filtered out invalid/incomplete data entries
 - Used Framer Motion with staggered animations (not blocking, but adds polish)
+- Intersection Observer API for efficient scroll detection
 
-**Trade-off**: All data is still loaded, but filtering is instant. Could add pagination/virtual scrolling if needed.
+**Trade-off**: Initial render is fast, but all data is still loaded in memory. Could add virtual scrolling if dataset grows significantly.
 
 ### Challenge 3: TypeScript Strict Mode
 
@@ -252,16 +291,18 @@ The details modal design focuses on:
 
 If I had more time, I would:
 
-1. **Virtual Scrolling**: Implement `react-window` or `react-virtuoso` for handling thousands of items efficiently
+1. **Virtual Scrolling**: Implement `react-window` or `react-virtuoso` for handling thousands of items efficiently (currently using infinite scroll)
 2. **WebSocket Integration**: Replace polling with WebSocket for real-time price updates
 3. **Advanced Filtering**: Add filters by price range, volume, market cap
-4. **Favorites/Watchlist**: Allow users to save favorite cryptocurrencies
+4. **Favorites/Watchlist**: Allow users to save favorite cryptocurrencies with localStorage persistence
 5. **Price Alerts**: Set up price alerts for specific cryptocurrencies
 6. **Historical Analysis**: Add more chart intervals (1d, 1w, 1m) and technical indicators
 7. **Performance Monitoring**: Add analytics to track API response times and error rates
 8. **Testing**: Add unit tests for hooks and components, integration tests for API calls
-9. **Accessibility**: Enhanced keyboard navigation and screen reader support
+9. **Accessibility**: Enhanced keyboard navigation and screen reader support (partially implemented)
 10. **Internationalization**: Support for multiple languages and currencies
+11. **Search Enhancements**: Add search history, recent searches, and search suggestions
+12. **Sorting Options**: Allow users to sort by price, volume, change percentage, etc.
 
 ## 🚀 Getting Started
 
@@ -320,16 +361,18 @@ npm start
 ### UI & Components
 
 - `@radix-ui/react-dialog`: Dialog component
+- `@radix-ui/react-dropdown-menu`: Dropdown menu component (theme toggle)
 - `@radix-ui/react-slot`: Slot component
 - `@radix-ui/react-separator`: Separator component
 - `lucide-react`: Icon library
 - `class-variance-authority`: Component variants
 - `clsx` & `tailwind-merge`: Class name utilities
+- `next-themes`: Theme management (light/dark/system)
 
 ### Features
 
 - `framer-motion`: Animations
-- `recharts`: Chart library
+- `recharts`: Chart library for price history visualization
 
 ## 🌐 Deployment
 
@@ -345,6 +388,8 @@ The app will be live at `https://your-project.vercel.app`
 ### Environment Variables
 
 No environment variables required - the app uses Binance's public Market Data Only API which doesn't require authentication.
+
+**Optional**: If deploying to production, you can set `NEXT_PUBLIC_BASE_URL` to your production URL for proper OpenGraph metadata.
 
 ## 📝 License
 
