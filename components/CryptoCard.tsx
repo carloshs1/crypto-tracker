@@ -52,7 +52,15 @@ export const CryptoCard = memo(function CryptoCard({
       layout
     >
       <Card
-        className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+        className={cn(
+          "cursor-pointer transition-all duration-300 relative overflow-hidden",
+          "hover:shadow-lg hover:scale-[1.02]",
+          "before:absolute before:inset-0 before:opacity-0 before:transition-opacity before:duration-300",
+          "hover:before:opacity-100",
+          isPositive
+            ? "hover:border-green-500/30 before:bg-linear-to-br before:from-green-500/5 before:via-green-500/10 before:to-transparent"
+            : "hover:border-red-500/30 before:bg-linear-to-br before:from-red-500/5 before:via-red-500/10 before:to-transparent"
+        )}
         onClick={onClick}
         role="button"
         tabIndex={0}
@@ -68,7 +76,7 @@ export const CryptoCard = memo(function CryptoCard({
           }
         }}
       >
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-3 relative z-10">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">{ticker.symbol}</h3>
@@ -90,7 +98,7 @@ export const CryptoCard = memo(function CryptoCard({
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2 relative z-10">
           <div>
             <p className="text-2xl font-bold">${formattedPrice}</p>
             <p className="text-xs text-muted-foreground">
