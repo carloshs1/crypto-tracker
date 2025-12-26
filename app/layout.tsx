@@ -22,11 +22,23 @@ export const metadata: Metadata = {
     default: "Crypto Market Analyzer",
     template: "%s | Crypto Market Analyzer",
   },
-  description: "Real-time cryptocurrency market data tracker using Binance API. Track prices, volumes, and market trends for thousands of cryptocurrencies.",
-  keywords: ["cryptocurrency", "crypto", "bitcoin", "ethereum", "market tracker", "binance", "trading", "crypto prices"],
-  authors: [{ name: "Crypto Tracker" }],
-  creator: "Crypto Tracker",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
+  description:
+    "Real-time cryptocurrency market data tracker using Binance API. Track prices, volumes, and market trends for thousands of cryptocurrencies.",
+  keywords: [
+    "cryptocurrency",
+    "crypto",
+    "bitcoin",
+    "ethereum",
+    "market tracker",
+    "binance",
+    "trading",
+    "crypto prices",
+  ],
+  authors: [{ name: "Carlos HS" }],
+  creator: "Crypto Tracker by Carlos HS",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+  ),
   viewport: {
     width: "device-width",
     initialScale: 1,
@@ -37,13 +49,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "/",
     title: "Crypto Market Analyzer",
-    description: "Real-time cryptocurrency market data tracker using Binance API",
+    description:
+      "Real-time cryptocurrency market data tracker using Binance API",
     siteName: "Crypto Market Analyzer",
   },
   twitter: {
     card: "summary_large_image",
     title: "Crypto Market Analyzer",
-    description: "Real-time cryptocurrency market data tracker using Binance API",
+    description:
+      "Real-time cryptocurrency market data tracker using Binance API",
   },
   robots: {
     index: true,
@@ -57,7 +71,7 @@ export const metadata: Metadata = {
     },
   },
   other: {
-    "preconnect": "https://data-api.binance.vision",
+    preconnect: "https://data-api.binance.vision",
     "dns-prefetch": "https://data-api.binance.vision",
   },
 };

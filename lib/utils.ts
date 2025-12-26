@@ -4,3 +4,34 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+/**
+ * Formats a number with abbreviations for large values
+ * Numbers >= 1,000,000 are formatted as "X.XX M"
+ * Numbers >= 1,000 are formatted as "X.XX K"
+ * Otherwise returns the number as-is
+ */
+export function formatCompactNumber(
+  value: number,
+  options?: {
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+  }
+): string {
+  const { minimumFractionDigits = 2, maximumFractionDigits = 2 } = options || {};
+  
+  if (Math.abs(value) >= 1_000_000) {
+    const millions = value / 1_000_000;
+    return `${millions.toFixed(maximumFractionDigits).replace(/\.?0+$/, "")} M`;
+  }
+  
+  if (Math.abs(value) >= 1_000) {
+    const thousands = value / 1_000;
+    return `${thousands.toFixed(maximumFractionDigits).replace(/\.?0+$/, "")} K`;
+  }
+  
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits,
+    maximumFractionDigits,
+  });
+}

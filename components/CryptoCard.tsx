@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Ticker24hr } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, formatCompactNumber } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { memo } from "react";
@@ -19,13 +19,27 @@ export const CryptoCard = memo(function CryptoCard({
 }: CryptoCardProps) {
   const priceChangePercent = parseFloat(ticker.priceChangePercent);
   const isPositive = priceChangePercent >= 0;
-  const formattedPrice = parseFloat(ticker.lastPrice).toLocaleString(
-    undefined,
-    {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 8,
+  const lastPrice = parseFloat(ticker.lastPrice);
+
+  // Helper function to format prices with compact notation for large numbers (>= 1M)
+  const formatPrice = (price: number, allowHighPrecision: boolean = false) => {
+    if (price >= 1_000_000) {
+      return formatCompactNumber(price, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
-  );
+    return price.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: allowHighPrecision ? 8 : 2,
+    });
+  };
+
+  const formattedPrice = formatPrice(lastPrice, true); // Main price allows high precision
+  const formattedAvgPrice = formatPrice(parseFloat(ticker.weightedAvgPrice));
+  const formattedHighPrice = formatPrice(parseFloat(ticker.highPrice));
+  const formattedLowPrice = formatPrice(parseFloat(ticker.lowPrice));
+
   const formattedVolume = parseFloat(ticker.volume).toLocaleString(undefined, {
     maximumFractionDigits: 2,
   });
@@ -42,7 +56,11 @@ export const CryptoCard = memo(function CryptoCard({
         onClick={onClick}
         role="button"
         tabIndex={0}
-        aria-label={`View details for ${ticker.symbol}, price $${formattedPrice}, ${priceChangePercent >= 0 ? 'up' : 'down'} ${Math.abs(priceChangePercent).toFixed(2)}%`}
+        aria-label={`View details for ${
+          ticker.symbol
+        }, price $${formattedPrice}, ${
+          priceChangePercent >= 0 ? "up" : "down"
+        } ${Math.abs(priceChangePercent).toFixed(2)}%`}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
@@ -76,20 +94,20 @@ export const CryptoCard = memo(function CryptoCard({
           <div>
             <p className="text-2xl font-bold">${formattedPrice}</p>
             <p className="text-xs text-muted-foreground">
-              ${parseFloat(ticker.weightedAvgPrice).toFixed(2)} avg
+              ${formattedAvgPrice} avg
             </p>
           </div>
           <div className="flex justify-between text-sm">
             <div>
               <p className="text-muted-foreground">High</p>
               <p className="font-medium text-green-600 dark:text-green-400">
-                ${parseFloat(ticker.highPrice).toFixed(2)}
+                ${formattedHighPrice}
               </p>
             </div>
             <div>
               <p className="text-muted-foreground">Low</p>
               <p className="font-medium text-red-600 dark:text-red-400">
-                ${parseFloat(ticker.lowPrice).toFixed(2)}
+                ${formattedLowPrice}
               </p>
             </div>
           </div>

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import type { Kline, Ticker24hr } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, formatCompactNumber } from "@/lib/utils";
 import { BarChart3, TrendingDown, TrendingUp } from "lucide-react";
 import { PriceChart } from "./PriceChart";
 
@@ -32,8 +32,16 @@ export function CryptoDetails({
   const priceChangePercent = parseFloat(ticker.priceChangePercent);
   const isPositive = priceChangePercent >= 0;
 
+  // Helper function to format numbers with compact notation for large numbers (>= 1M)
   const formatNumber = (value: string, decimals: number = 2) => {
-    return parseFloat(value).toLocaleString(undefined, {
+    const numValue = parseFloat(value);
+    if (numValue >= 1_000_000) {
+      return formatCompactNumber(numValue, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+    }
+    return numValue.toLocaleString(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     });

@@ -37,7 +37,10 @@ export function CryptoList({
     return (
       <Card className="border-destructive" role="alert" aria-live="assertive">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-12 w-12 text-destructive mb-4" aria-hidden="true" />
+          <AlertCircle
+            className="h-12 w-12 text-destructive mb-4"
+            aria-hidden="true"
+          />
           <h3 className="text-lg font-semibold mb-2">Failed to load data</h3>
           <p className="text-sm text-muted-foreground text-center max-w-md">
             {error.message ||
@@ -65,7 +68,7 @@ export function CryptoList({
 
   return (
     <>
-      <div 
+      <div
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         role="list"
         aria-label="Cryptocurrency list"
@@ -89,7 +92,10 @@ export function CryptoList({
           aria-live="polite"
           aria-label="Loading more cryptocurrencies"
         >
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+          <Loader2
+            className="h-6 w-6 animate-spin text-muted-foreground"
+            aria-hidden="true"
+          />
           <span className="sr-only">Loading more cryptocurrencies...</span>
         </div>
       )}
