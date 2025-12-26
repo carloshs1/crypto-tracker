@@ -2,6 +2,8 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Kline } from "@/lib/types";
+import { useTheme } from "next-themes";
+import { useMemo } from "react";
 import {
   CartesianGrid,
   Line,
@@ -18,6 +20,18 @@ interface PriceChartProps {
 }
 
 export function PriceChart({ klines, isLoading }: PriceChartProps) {
+  const { theme } = useTheme();
+  const colors = useMemo(
+    () => ({
+      foreground: theme === "dark" ? "#ffffff" : "#000000",
+      border: theme === "dark" ? "#1a1a1a" : "#e5e5e5",
+      card: theme === "dark" ? "#1a1a1a" : "#ffffff",
+      cardForeground: theme === "dark" ? "#ffffff" : "#000000",
+      primary: theme === "dark" ? "#ffffff" : "#000000",
+    }),
+    [theme]
+  );
+
   if (isLoading) {
     return <Skeleton className="h-64 w-full" />;
   }
@@ -44,31 +58,47 @@ export function PriceChart({ klines, isLoading }: PriceChartProps) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke={colors.border}
+          opacity={0.5}
+        />
         <XAxis
           dataKey="time"
-          className="text-xs"
-          tick={{ fill: "currentColor" }}
+          tick={{
+            fill: colors.foreground,
+            fontSize: 12,
+          }}
+          stroke={colors.border}
         />
         <YAxis
-          className="text-xs"
-          tick={{ fill: "currentColor" }}
+          tick={{
+            fill: colors.foreground,
+            fontSize: 12,
+          }}
+          stroke={colors.border}
           domain={["dataMin", "dataMax"]}
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "hsl(var(--card))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: colors.card,
+            border: `1px solid ${colors.border}`,
             borderRadius: "0.5rem",
+            color: colors.cardForeground,
+          }}
+          labelStyle={{
+            color: colors.cardForeground,
+            fontWeight: 600,
           }}
           formatter={(value: number) => `$${value.toFixed(2)}`}
         />
         <Line
           type="monotone"
           dataKey="price"
-          stroke="hsl(var(--primary))"
-          strokeWidth={2}
+          stroke={colors.primary}
+          strokeWidth={2.5}
           dot={false}
+          activeDot={{ r: 4, fill: colors.primary }}
         />
       </LineChart>
     </ResponsiveContainer>
