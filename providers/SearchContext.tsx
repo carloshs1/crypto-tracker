@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 interface SearchContextType {
   searchQuery: string;
@@ -20,7 +20,9 @@ export function SearchProvider({
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <SearchContext.Provider value={{ searchQuery, setSearchQuery, onStatsUpdate }}>
+    <SearchContext.Provider
+      value={{ searchQuery, setSearchQuery, onStatsUpdate }}
+    >
       {children}
     </SearchContext.Provider>
   );
@@ -33,4 +35,3 @@ export function useSearch() {
   }
   return context;
 }
-

@@ -2,10 +2,10 @@
 
 import { CryptoDetails } from "@/components/CryptoDetails";
 import { CryptoList } from "@/components/CryptoList";
-import { useSearch } from "@/components/SearchContext";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getKlinesClient } from "@/lib/binance";
 import type { Kline, Ticker24hr } from "@/lib/types";
+import { useSearch } from "@/providers/SearchContext";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const INITIAL_VISIBLE_COUNT = 30;
@@ -93,7 +93,10 @@ export function CryptoListData({ initialTickers }: CryptoListDataProps) {
   // Update stats callback
   useEffect(() => {
     if (onStatsUpdate) {
-      onStatsUpdate(tickers.length, Math.min(visibleCount, filteredTickers.length));
+      onStatsUpdate(
+        tickers.length,
+        Math.min(visibleCount, filteredTickers.length)
+      );
     }
   }, [tickers.length, visibleCount, filteredTickers.length, onStatsUpdate]);
 
@@ -154,4 +157,3 @@ export function CryptoListData({ initialTickers }: CryptoListDataProps) {
     </>
   );
 }
-

@@ -1,7 +1,7 @@
 "use client";
 
 import { CryptoLayout } from "@/components/CryptoLayout";
-import { SearchProvider, useSearch } from "@/components/SearchContext";
+import { SearchProvider, useSearch } from "@/providers/SearchContext";
 import type { Ticker24hr } from "@/lib/types";
 import { ReactNode, useEffect, useState } from "react";
 
